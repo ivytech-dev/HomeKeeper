@@ -10,6 +10,9 @@ struct ContentView: View {
     @State private var showingCSVImporter = false
     @State private var importMessage: String?
     @State private var showDisposed = true
+    @State private var showingExporter = false
+    @State private var csvDocument = CSVDocument()
+    @State private var exportMessage: String?
 
     private static let dateFormatter: DateFormatter = {
         let f = DateFormatter()
@@ -149,6 +152,14 @@ struct ContentView: View {
                 .help(showDisposed ? "除却済みを非表示" : "除却済みを表示")
 
                 Button {
+                    csvDocument = CSVDocument(text: store.exportCSV())
+                    showingExporter = true
+                } label: {
+                    Label("CSV出力", systemImage: "square.and.arrow.up")
+                }
+                .disabled(store.assets.isEmpty)
+
+                Button {
                     showingCSVImporter = true
                 } label: {
                     Label("CSV取込", systemImage: "square.and.arrow.down")
@@ -189,6 +200,16 @@ struct ContentView: View {
                 importMessage = "ファイル選択エラー: \(error.localizedDescription)"
             }
         }
+        .fileExporter(
+            isPresented: $showingExporter,
+            document: csvDocument,
+            contentType: .commaSeparatedText,
+            defaultFilename: "MyAssetSheet.csv"
+        ) { result in
+            if case .failure(let error) = result {
+                exportMessage = "書き出しエラー: \(error.localizedDescription)"
+            }
+        }
         .alert("CSV取込", isPresented: Binding(
             get: { importMessage != nil },
             set: { if !$0 { importMessage = nil } }
@@ -196,6 +217,14 @@ struct ContentView: View {
             Button("OK") { importMessage = nil }
         } message: {
             Text(importMessage ?? "")
+        }
+        .alert("CSV出力", isPresented: Binding(
+            get: { exportMessage != nil },
+            set: { if !$0 { exportMessage = nil } }
+        )) {
+            Button("OK") { exportMessage = nil }
+        } message: {
+            Text(exportMessage ?? "")
         }
         .sheet(isPresented: $showingAddSheet) {
             AssetFormView { asset in
@@ -209,5 +238,25 @@ struct ContentView: View {
         }
         .navigationTitle("耐久消費財管理")
         .frame(minWidth: 900, minHeight: 400)
+    }
+}
+
+// MARK: - CSV Document
+
+struct CSVDocument: FileDocument {
+    static var readableContentTypes: [UTType] { [.commaSeparatedText] }
+
+    var text: String
+
+    init(text: String = "") {
+        self.text = text
+    }
+
+    init(configuration: ReadConfiguration) throws {
+        text = String(data: configuration.file.regularFileContents ?? Data(), encoding: .utf8) ?? ""
+    }
+
+    func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
+        FileWrapper(regularFileWithContents: text.data(using: .utf8) ?? Data())
     }
 }

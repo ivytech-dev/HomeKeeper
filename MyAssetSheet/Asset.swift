@@ -91,6 +91,38 @@ class AssetStore: ObservableObject {
         try? data.write(to: Self.fileURL)
     }
 
+    // MARK: - CSV Export
+
+    func exportCSV() -> String {
+        let header = "分類,製品,購入店,購入日,購入金額,耐用年数,備考"
+        let df = DateFormatter()
+        df.dateFormat = "yyyy/MM/dd"
+
+        let rows = assets.map { asset -> String in
+            let notes = asset.disposed
+                ? "除却済み" + (asset.notes.isEmpty ? "" : " \(asset.notes)")
+                : asset.notes
+            let cols = [
+                csvEscape(asset.category),
+                csvEscape(asset.productName),
+                csvEscape(asset.store),
+                df.string(from: asset.purchaseDate),
+                String(asset.purchasePrice),
+                String(asset.usefulLifeYears),
+                csvEscape(notes),
+            ]
+            return cols.joined(separator: ",")
+        }
+        return ([header] + rows).joined(separator: "\n") + "\n"
+    }
+
+    private func csvEscape(_ field: String) -> String {
+        if field.contains(",") || field.contains("\"") || field.contains("\n") {
+            return "\"" + field.replacingOccurrences(of: "\"", with: "\"\"") + "\""
+        }
+        return field
+    }
+
     func add(_ asset: Asset) {
         assets.append(asset)
         save()
