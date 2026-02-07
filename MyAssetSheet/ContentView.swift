@@ -2,7 +2,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct ContentView: View {
-    @StateObject private var store = AssetStore()
+    @ObservedObject var store: AssetStore
     @State private var selection = Set<Asset.ID>()
     @State private var showingAddSheet = false
     @State private var editingAsset: Asset?
