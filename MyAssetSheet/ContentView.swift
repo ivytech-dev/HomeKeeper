@@ -9,6 +9,7 @@ struct ContentView: View {
     @State private var sortOrder = [KeyPathComparator(\Asset.purchaseDate, order: .reverse)]
     @State private var showingCSVImporter = false
     @State private var importMessage: String?
+    @State private var showDisposed = true
 
     private static let dateFormatter: DateFormatter = {
         let f = DateFormatter()
@@ -18,7 +19,8 @@ struct ContentView: View {
     }()
 
     private var sortedAssets: [Asset] {
-        store.assets.sorted(using: sortOrder)
+        let filtered = showDisposed ? store.assets : store.assets.filter { !$0.disposed }
+        return filtered.sorted(using: sortOrder)
     }
 
     private func rowOpacity(_ asset: Asset) -> Double {
@@ -131,6 +133,21 @@ struct ContentView: View {
         }
         .toolbar {
             ToolbarItemGroup {
+                Button {
+                    showDisposed.toggle()
+                    if !showDisposed {
+                        selection = selection.filter { id in
+                            store.assets.first { $0.id == id }?.disposed != true
+                        }
+                    }
+                } label: {
+                    Label(
+                        showDisposed ? "除却済みを非表示" : "除却済みを表示",
+                        systemImage: showDisposed ? "eye" : "eye.slash"
+                    )
+                }
+                .help(showDisposed ? "除却済みを非表示" : "除却済みを表示")
+
                 Button {
                     showingCSVImporter = true
                 } label: {
