@@ -88,6 +88,30 @@ struct MyAssetSheetApp: App {
                 .keyboardShortcut("e", modifiers: [.command, .shift])
                 .disabled(store.assets.isEmpty)
             }
+            CommandGroup(replacing: .help) {
+                Button("Home Keeper ヘルプ") {
+                    showHelpWindow()
+                }
+                .keyboardShortcut("?", modifiers: .command)
+            }
         }
+    }
+
+    private func showHelpWindow() {
+        if let existing = NSApp.windows.first(where: { $0.identifier?.rawValue == "help" }) {
+            existing.makeKeyAndOrderFront(nil)
+            return
+        }
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 480, height: 520),
+            styleMask: [.titled, .closable, .resizable],
+            backing: .buffered,
+            defer: false
+        )
+        window.identifier = NSUserInterfaceItemIdentifier("help")
+        window.title = "Home Keeper ヘルプ"
+        window.contentView = NSHostingView(rootView: HelpView())
+        window.center()
+        window.makeKeyAndOrderFront(nil)
     }
 }
