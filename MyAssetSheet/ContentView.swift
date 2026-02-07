@@ -59,7 +59,8 @@ struct ContentView: View {
             .width(min: 60, ideal: 70)
 
             TableColumn("日額費用") { (asset: Asset) in
-                Text(String(format: "¥%.1f", asset.dailyCost))
+                Text(asset.purchasePrice > 0 && asset.elapsedDays > 0
+                     ? String(format: "¥%.1f", asset.dailyCost) : "-")
                     .monospacedDigit()
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
