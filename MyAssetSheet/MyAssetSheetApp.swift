@@ -29,7 +29,15 @@ struct MyAssetSheetApp: App {
                         )
                     ]
                     if let icon = NSImage(named: "AppIcon") {
-                        options[.applicationIcon] = icon
+                        let size = icon.size
+                        let radius = size.width * 0.22
+                        let masked = NSImage(size: size)
+                        masked.lockFocus()
+                        NSBezierPath(roundedRect: NSRect(origin: .zero, size: size),
+                                     xRadius: radius, yRadius: radius).addClip()
+                        icon.draw(in: NSRect(origin: .zero, size: size))
+                        masked.unlockFocus()
+                        options[.applicationIcon] = masked
                     }
                     NSApplication.shared.orderFrontStandardAboutPanel(options: options)
                 }
