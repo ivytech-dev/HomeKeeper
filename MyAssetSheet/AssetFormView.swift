@@ -11,6 +11,7 @@ struct AssetFormView: View {
     @State private var purchasePrice: String
     @State private var usefulLifeYears: String
     @State private var notes: String
+    @State private var disposed: Bool
 
     private let existingAsset: Asset?
     private let onSave: (Asset) -> Void
@@ -32,6 +33,7 @@ struct AssetFormView: View {
         _purchasePrice = State(initialValue: asset.map { String($0.purchasePrice) } ?? "")
         _usefulLifeYears = State(initialValue: asset.map { String($0.usefulLifeYears) } ?? "")
         _notes = State(initialValue: asset?.notes ?? "")
+        _disposed = State(initialValue: asset?.disposed ?? false)
     }
 
     var body: some View {
@@ -57,6 +59,7 @@ struct AssetFormView: View {
                 TextField("購入金額 (円):", text: $purchasePrice)
                 TextField("耐用年数:", text: $usefulLifeYears)
                 TextField("備考:", text: $notes)
+                Toggle("除却済み", isOn: $disposed)
             }
 
             HStack {
@@ -81,6 +84,7 @@ struct AssetFormView: View {
         asset.purchasePrice = Int(purchasePrice) ?? 0
         asset.usefulLifeYears = Int(usefulLifeYears) ?? 0
         asset.notes = notes
+        asset.disposed = disposed
         onSave(asset)
         dismiss()
     }

@@ -21,19 +21,33 @@ struct ContentView: View {
         store.assets.sorted(using: sortOrder)
     }
 
+    private func rowOpacity(_ asset: Asset) -> Double {
+        asset.disposed ? 0.4 : 1.0
+    }
+
     var body: some View {
         Table(sortedAssets, selection: $selection, sortOrder: $sortOrder) {
-            TableColumn("分類", value: \.category)
-                .width(min: 60, ideal: 80)
+            TableColumn("分類", value: \.category) { asset in
+                Text(asset.category)
+                    .opacity(rowOpacity(asset))
+            }
+            .width(min: 60, ideal: 80)
 
-            TableColumn("製品", value: \.productName)
-                .width(min: 80, ideal: 120)
+            TableColumn("製品", value: \.productName) { asset in
+                Text(asset.productName)
+                    .opacity(rowOpacity(asset))
+            }
+            .width(min: 80, ideal: 120)
 
-            TableColumn("購入店", value: \.store)
-                .width(min: 60, ideal: 100)
+            TableColumn("購入店", value: \.store) { asset in
+                Text(asset.store)
+                    .opacity(rowOpacity(asset))
+            }
+            .width(min: 60, ideal: 100)
 
             TableColumn("購入日", value: \.purchaseDate) { asset in
                 Text(Self.dateFormatter.string(from: asset.purchaseDate))
+                    .opacity(rowOpacity(asset))
             }
             .width(min: 80, ideal: 100)
 
@@ -41,6 +55,7 @@ struct ContentView: View {
                 Text("¥\(asset.purchasePrice.formatted())")
                     .monospacedDigit()
                     .frame(maxWidth: .infinity, alignment: .trailing)
+                    .opacity(rowOpacity(asset))
             }
             .width(min: 80, ideal: 100)
 
@@ -48,14 +63,19 @@ struct ContentView: View {
                 Text("\(asset.elapsedDays.formatted())日")
                     .monospacedDigit()
                     .frame(maxWidth: .infinity, alignment: .trailing)
+                    .opacity(rowOpacity(asset))
             }
             .width(min: 60, ideal: 80)
 
             TableColumn("経過年数") { (asset: Asset) in
                 Text(String(format: "%.1f年", asset.elapsedYears))
                     .monospacedDigit()
-                    .foregroundColor(asset.usefulLifeYears > 0 && asset.elapsedYears > Double(asset.usefulLifeYears) ? .red : .primary)
+                    .foregroundColor(
+                        asset.disposed ? .primary :
+                        asset.usefulLifeYears > 0 && asset.elapsedYears > Double(asset.usefulLifeYears) ? .red : .primary
+                    )
                     .frame(maxWidth: .infinity, alignment: .trailing)
+                    .opacity(rowOpacity(asset))
             }
             .width(min: 60, ideal: 70)
 
@@ -64,6 +84,7 @@ struct ContentView: View {
                      ? String(format: "¥%.1f", asset.dailyCost) : "-")
                     .monospacedDigit()
                     .frame(maxWidth: .infinity, alignment: .trailing)
+                    .opacity(rowOpacity(asset))
             }
             .width(min: 60, ideal: 80)
 
@@ -71,11 +92,15 @@ struct ContentView: View {
                 Text("\(asset.usefulLifeYears)年")
                     .monospacedDigit()
                     .frame(maxWidth: .infinity, alignment: .trailing)
+                    .opacity(rowOpacity(asset))
             }
             .width(min: 50, ideal: 60)
 
-            TableColumn("備考", value: \.notes)
-                .width(min: 60, ideal: 120)
+            TableColumn("備考", value: \.notes) { asset in
+                Text(asset.disposed ? "除却済み" + (asset.notes.isEmpty ? "" : " \(asset.notes)") : asset.notes)
+                    .opacity(rowOpacity(asset))
+            }
+            .width(min: 60, ideal: 120)
         }
         .contextMenu(forSelectionType: Asset.ID.self) { ids in
             if ids.isEmpty {

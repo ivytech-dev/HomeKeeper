@@ -20,6 +20,7 @@ struct Asset: Identifiable, Codable {
     var purchasePrice: Int = 0          // 購入金額
     var usefulLifeYears: Int = 0        // 耐用年数
     var notes: String = ""              // 備考
+    var disposed: Bool = false          // 除却済み
 
     /// 購入日から現在までの経過日数
     var elapsedDays: Int {
@@ -116,7 +117,13 @@ class AssetStore: ObservableObject {
             asset.purchaseDate = Self.parseDate(cols.value(at: 3)) ?? Date()
             asset.purchasePrice = Int(cols.value(at: 4).replacingOccurrences(of: ",", with: "")) ?? 0
             asset.usefulLifeYears = Int(cols.value(at: 5)) ?? 0
-            asset.notes = cols.value(at: 6)
+            let rawNotes = cols.value(at: 6)
+            if rawNotes.contains("除却済み") {
+                asset.disposed = true
+                asset.notes = rawNotes.replacingOccurrences(of: "除却済み", with: "").trimmingCharacters(in: .whitespaces)
+            } else {
+                asset.notes = rawNotes
+            }
 
             assets.append(asset)
             imported += 1
