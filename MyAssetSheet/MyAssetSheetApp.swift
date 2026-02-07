@@ -19,7 +19,7 @@ struct MyAssetSheetApp: App {
         .commands {
             CommandGroup(replacing: .appInfo) {
                 Button("Home Keeper について") {
-                    NSApplication.shared.orderFrontStandardAboutPanel(options: [
+                    var options: [NSApplication.AboutPanelOptionKey: Any] = [
                         .credits: NSAttributedString(
                             string: "自宅の耐久消費財を管理するアプリ\n購入履歴・耐用年数・費用を一覧とダッシュボードで確認できます。",
                             attributes: [
@@ -27,7 +27,11 @@ struct MyAssetSheetApp: App {
                                 .foregroundColor: NSColor.secondaryLabelColor
                             ]
                         )
-                    ])
+                    ]
+                    if let icon = NSImage(named: "AppIcon") {
+                        options[.applicationIcon] = icon
+                    }
+                    NSApplication.shared.orderFrontStandardAboutPanel(options: options)
                 }
             }
             CommandGroup(after: .newItem) {
