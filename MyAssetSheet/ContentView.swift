@@ -54,6 +54,7 @@ struct ContentView: View {
             TableColumn("経過年数") { (asset: Asset) in
                 Text(String(format: "%.1f年", asset.elapsedYears))
                     .monospacedDigit()
+                    .foregroundColor(asset.usefulLifeYears > 0 && asset.elapsedYears > Double(asset.usefulLifeYears) ? .red : .primary)
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
             .width(min: 60, ideal: 70)
