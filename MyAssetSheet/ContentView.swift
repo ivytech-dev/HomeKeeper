@@ -113,6 +113,12 @@ struct ContentView: View {
                         }
                     }
                 }
+                let allDisposed = ids.allSatisfy { id in
+                    store.assets.first { $0.id == id }?.disposed == true
+                }
+                Button(allDisposed ? "除却を解除" : "除却済みにする") {
+                    store.toggleDisposed(ids)
+                }
                 Button("削除", role: .destructive) {
                     store.delete(ids)
                     selection.removeAll()

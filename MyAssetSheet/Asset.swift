@@ -81,6 +81,15 @@ class AssetStore: ObservableObject {
         }
     }
 
+    func toggleDisposed(_ ids: Set<Asset.ID>) {
+        for id in ids {
+            if let index = assets.firstIndex(where: { $0.id == id }) {
+                assets[index].disposed.toggle()
+            }
+        }
+        save()
+    }
+
     func delete(_ ids: Set<Asset.ID>) {
         assets.removeAll { ids.contains($0.id) }
         save()
