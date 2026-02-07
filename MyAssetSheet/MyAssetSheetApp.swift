@@ -18,7 +18,7 @@ struct MyAssetSheetApp: App {
         .defaultSize(width: 1100, height: 600)
         .commands {
             CommandGroup(replacing: .appInfo) {
-                Button("MyAssetSheet について") {
+                Button("Home Keeper について") {
                     NSApplication.shared.orderFrontStandardAboutPanel(options: [
                         .credits: NSAttributedString(
                             string: "自宅の耐久消費財を管理するアプリ\n購入履歴・耐用年数・費用を一覧とダッシュボードで確認できます。",
@@ -58,7 +58,7 @@ struct MyAssetSheetApp: App {
                 Button("CSV 出力...") {
                     let panel = NSSavePanel()
                     panel.allowedContentTypes = [.commaSeparatedText]
-                    panel.nameFieldStringValue = "MyAssetSheet.csv"
+                    panel.nameFieldStringValue = "HomeKeeper.csv"
                     guard panel.runModal() == .OK, let url = panel.url else { return }
                     let accessing = url.startAccessingSecurityScopedResource()
                     defer { if accessing { url.stopAccessingSecurityScopedResource() } }

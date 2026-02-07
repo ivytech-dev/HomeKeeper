@@ -1,4 +1,4 @@
-# MyAssetSheet ユーザーマニュアル
+# Home Keeper ユーザーマニュアル
 
 自宅の耐久消費財を管理するための macOS アプリケーションです。
 購入履歴・耐用年数・費用を一覧とダッシュボードで確認できます。
@@ -216,11 +216,11 @@
 
 ## メニューバー
 
-### MyAssetSheet メニュー
+### Home Keeper メニュー
 
 | メニュー項目 | 説明 |
 |------------|------|
-| MyAssetSheet について | バージョン情報とアプリの説明を表示 |
+| Home Keeper について | バージョン情報とアプリの説明を表示 |
 
 ### ファイルメニュー
 
@@ -266,7 +266,7 @@
 データは以下のフォルダに JSON 形式で自動保存されます。
 
 ```
-~/Library/Application Support/MyAssetSheet/assets.json
+~/Library/Application Support/HomeKeeper/assets.json
 ```
 
 - アプリの起動時に自動で読み込まれます
