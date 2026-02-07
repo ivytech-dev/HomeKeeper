@@ -71,6 +71,11 @@ struct AssetFormView: View {
                     .disabled(productName.isEmpty)
             }
         }
+        .onChange(of: selectedCategory) { newValue in
+            if let life = AssetCategory.defaultUsefulLife(for: newValue) {
+                usefulLifeYears = String(life)
+            }
+        }
         .padding()
         .frame(width: 400)
     }
