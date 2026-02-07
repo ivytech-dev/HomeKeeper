@@ -156,12 +156,14 @@ struct ContentView: View {
                 } label: {
                     Label("追加", systemImage: "plus")
                 }
+                .help("新規追加")
 
                 Button {
                     showingCSVImporter = true
                 } label: {
                     Label("CSV取込", systemImage: "square.and.arrow.down")
                 }
+                .help("CSV取込")
 
                 Button {
                     csvDocument = CSVDocument(text: store.exportCSV())
@@ -170,6 +172,7 @@ struct ContentView: View {
                     Label("CSV出力", systemImage: "square.and.arrow.up")
                 }
                 .disabled(store.assets.isEmpty)
+                .help("CSV出力")
 
                 Button {
                     store.delete(selection)
@@ -178,6 +181,7 @@ struct ContentView: View {
                     Label("削除", systemImage: "trash")
                 }
                 .disabled(selection.isEmpty)
+                .help("削除")
             }
         }
         .fileImporter(
