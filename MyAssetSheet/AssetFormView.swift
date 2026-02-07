@@ -3,7 +3,8 @@ import SwiftUI
 struct AssetFormView: View {
     @Environment(\.dismiss) private var dismiss
 
-    @State private var category: String
+    @State private var selectedCategory: String
+    @State private var customCategory: String
     @State private var productName: String
     @State private var store: String
     @State private var purchaseDate: Date
@@ -14,10 +15,17 @@ struct AssetFormView: View {
     private let existingAsset: Asset?
     private let onSave: (Asset) -> Void
 
+    private var category: String {
+        selectedCategory == AssetCategory.other ? customCategory : selectedCategory
+    }
+
     init(asset: Asset? = nil, onSave: @escaping (Asset) -> Void) {
         self.existingAsset = asset
         self.onSave = onSave
-        _category = State(initialValue: asset?.category ?? "")
+        let cat = asset?.category ?? ""
+        let isPredefined = AssetCategory.predefined.contains(cat)
+        _selectedCategory = State(initialValue: isPredefined ? cat : (cat.isEmpty ? "" : AssetCategory.other))
+        _customCategory = State(initialValue: isPredefined ? "" : cat)
         _productName = State(initialValue: asset?.productName ?? "")
         _store = State(initialValue: asset?.store ?? "")
         _purchaseDate = State(initialValue: asset?.purchaseDate ?? Date())
@@ -32,7 +40,17 @@ struct AssetFormView: View {
                 .font(.headline)
 
             Form {
-                TextField("分類:", text: $category)
+                Picker("分類:", selection: $selectedCategory) {
+                    Text("選択してください").tag("")
+                    ForEach(AssetCategory.predefined, id: \.self) { cat in
+                        Text(cat).tag(cat)
+                    }
+                    Divider()
+                    Text(AssetCategory.other).tag(AssetCategory.other)
+                }
+                if selectedCategory == AssetCategory.other {
+                    TextField("分類名:", text: $customCategory)
+                }
                 TextField("製品:", text: $productName)
                 TextField("購入店:", text: $store)
                 DatePicker("購入日:", selection: $purchaseDate, displayedComponents: .date)

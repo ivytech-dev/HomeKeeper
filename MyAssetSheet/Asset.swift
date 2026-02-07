@@ -1,5 +1,16 @@
 import Foundation
 
+enum AssetCategory {
+    static let predefined = [
+        "テレビ", "冷蔵庫", "洗濯機", "掃除機", "エアコン",
+        "電子レンジ", "炊飯器", "食洗機",
+        "PC", "タブレット", "スマートフォン", "時計",
+        "カメラ", "プリンター/複合機", "スキャナー",
+        "ルータ/ネットワーク", "オーディオ", "照明", "家具",
+    ]
+    static let other = "その他"
+}
+
 struct Asset: Identifiable, Codable {
     var id = UUID()
     var category: String = ""           // 分類
