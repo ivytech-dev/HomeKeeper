@@ -73,4 +73,107 @@ class AssetStore: ObservableObject {
         assets.removeAll { ids.contains($0.id) }
         save()
     }
+
+    // MARK: - CSV Import
+
+    /// CSV ファイルを読み込んでアセットを追加する
+    /// 期待するカラム順: 分類, 製品, 購入店, 購入日, 購入金額, 耐用年数, 備考
+    /// 1行目がヘッダ行（"分類" or "製品" を含む）なら自動スキップ
+    func importCSV(from url: URL) throws -> Int {
+        let content = try String(contentsOf: url, encoding: .utf8)
+        let lines = content.components(separatedBy: .newlines)
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty }
+
+        guard !lines.isEmpty else { return 0 }
+
+        var dataLines = lines
+        // ヘッダ行の判定・スキップ
+        if let first = dataLines.first, first.contains("分類") || first.contains("製品") {
+            dataLines.removeFirst()
+        }
+
+        var imported = 0
+        for line in dataLines {
+            let cols = parseCSVLine(line)
+            guard cols.count >= 2 else { continue } // 最低限「分類」「製品」が必要
+
+            var asset = Asset()
+            asset.category = cols.value(at: 0)
+            asset.productName = cols.value(at: 1)
+            asset.store = cols.value(at: 2)
+            asset.purchaseDate = Self.parseDate(cols.value(at: 3)) ?? Date()
+            asset.purchasePrice = Int(cols.value(at: 4).replacingOccurrences(of: ",", with: "")) ?? 0
+            asset.usefulLifeYears = Int(cols.value(at: 5)) ?? 0
+            asset.notes = cols.value(at: 6)
+
+            assets.append(asset)
+            imported += 1
+        }
+
+        if imported > 0 { save() }
+        return imported
+    }
+
+    /// CSV の1行をパースし、ダブルクォート囲みやカンマを正しく処理する
+    private func parseCSVLine(_ line: String) -> [String] {
+        var fields: [String] = []
+        var current = ""
+        var inQuotes = false
+        var iterator = line.makeIterator()
+
+        while let char = iterator.next() {
+            if inQuotes {
+                if char == "\"" {
+                    // "" はエスケープされた引用符
+                    if let next = iterator.next() {
+                        if next == "\"" {
+                            current.append("\"")
+                        } else {
+                            inQuotes = false
+                            if next == "," {
+                                fields.append(current)
+                                current = ""
+                            } else {
+                                current.append(next)
+                            }
+                        }
+                    } else {
+                        inQuotes = false
+                    }
+                } else {
+                    current.append(char)
+                }
+            } else {
+                if char == "\"" {
+                    inQuotes = true
+                } else if char == "," {
+                    fields.append(current)
+                    current = ""
+                } else {
+                    current.append(char)
+                }
+            }
+        }
+        fields.append(current)
+        return fields
+    }
+
+    private static func parseDate(_ string: String) -> Date? {
+        let trimmed = string.trimmingCharacters(in: .whitespaces)
+        if trimmed.isEmpty { return nil }
+        for fmt in ["yyyy/MM/dd", "yyyy-MM-dd", "yyyy.MM.dd", "yyyy年MM月dd日"] {
+            let df = DateFormatter()
+            df.locale = Locale(identifier: "ja_JP")
+            df.dateFormat = fmt
+            if let date = df.date(from: trimmed) { return date }
+        }
+        return nil
+    }
+}
+
+private extension Array where Element == String {
+    func value(at index: Int) -> String {
+        index < count ? self[index].trimmingCharacters(in: .whitespaces) : ""
+    }
 }

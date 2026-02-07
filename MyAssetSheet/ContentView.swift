@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct ContentView: View {
     @StateObject private var store = AssetStore()
@@ -6,6 +7,8 @@ struct ContentView: View {
     @State private var showingAddSheet = false
     @State private var editingAsset: Asset?
     @State private var sortOrder = [KeyPathComparator(\Asset.purchaseDate, order: .reverse)]
+    @State private var showingCSVImporter = false
+    @State private var importMessage: String?
 
     private static let dateFormatter: DateFormatter = {
         let f = DateFormatter()
@@ -96,6 +99,12 @@ struct ContentView: View {
         .toolbar {
             ToolbarItemGroup {
                 Button {
+                    showingCSVImporter = true
+                } label: {
+                    Label("CSV取込", systemImage: "square.and.arrow.down")
+                }
+
+                Button {
                     showingAddSheet = true
                 } label: {
                     Label("追加", systemImage: "plus")
@@ -109,6 +118,34 @@ struct ContentView: View {
                 }
                 .disabled(selection.isEmpty)
             }
+        }
+        .fileImporter(
+            isPresented: $showingCSVImporter,
+            allowedContentTypes: [.commaSeparatedText, .plainText],
+            allowsMultipleSelection: false
+        ) { result in
+            switch result {
+            case .success(let urls):
+                guard let url = urls.first else { return }
+                let accessing = url.startAccessingSecurityScopedResource()
+                defer { if accessing { url.stopAccessingSecurityScopedResource() } }
+                do {
+                    let count = try store.importCSV(from: url)
+                    importMessage = "\(count)件のデータを取り込みました。"
+                } catch {
+                    importMessage = "読み込みエラー: \(error.localizedDescription)"
+                }
+            case .failure(let error):
+                importMessage = "ファイル選択エラー: \(error.localizedDescription)"
+            }
+        }
+        .alert("CSV取込", isPresented: Binding(
+            get: { importMessage != nil },
+            set: { if !$0 { importMessage = nil } }
+        )) {
+            Button("OK") { importMessage = nil }
+        } message: {
+            Text(importMessage ?? "")
         }
         .sheet(isPresented: $showingAddSheet) {
             AssetFormView { asset in
