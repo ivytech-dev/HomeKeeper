@@ -152,12 +152,10 @@ struct ContentView: View {
                 .help(showDisposed ? "除却済みを非表示" : "除却済みを表示")
 
                 Button {
-                    csvDocument = CSVDocument(text: store.exportCSV())
-                    showingExporter = true
+                    showingAddSheet = true
                 } label: {
-                    Label("CSV出力", systemImage: "square.and.arrow.up")
+                    Label("追加", systemImage: "plus")
                 }
-                .disabled(store.assets.isEmpty)
 
                 Button {
                     showingCSVImporter = true
@@ -166,10 +164,12 @@ struct ContentView: View {
                 }
 
                 Button {
-                    showingAddSheet = true
+                    csvDocument = CSVDocument(text: store.exportCSV())
+                    showingExporter = true
                 } label: {
-                    Label("追加", systemImage: "plus")
+                    Label("CSV出力", systemImage: "square.and.arrow.up")
                 }
+                .disabled(store.assets.isEmpty)
 
                 Button {
                     store.delete(selection)
