@@ -60,7 +60,7 @@ struct ContentView: View {
             .width(min: 80, ideal: 100)
 
             TableColumn("経過日数") { (asset: Asset) in
-                Text("\(asset.elapsedDays.formatted())日")
+                Text(asset.disposed ? "-" : "\(asset.elapsedDays.formatted())日")
                     .monospacedDigit()
                     .frame(maxWidth: .infinity, alignment: .trailing)
                     .opacity(rowOpacity(asset))
@@ -68,11 +68,10 @@ struct ContentView: View {
             .width(min: 60, ideal: 80)
 
             TableColumn("経過年数") { (asset: Asset) in
-                Text(String(format: "%.1f年", asset.elapsedYears))
+                Text(asset.disposed ? "-" : String(format: "%.1f年", asset.elapsedYears))
                     .monospacedDigit()
                     .foregroundColor(
-                        asset.disposed ? .primary :
-                        asset.usefulLifeYears > 0 && asset.elapsedYears > Double(asset.usefulLifeYears) ? .red : .primary
+                        !asset.disposed && asset.usefulLifeYears > 0 && asset.elapsedYears > Double(asset.usefulLifeYears) ? .red : .primary
                     )
                     .frame(maxWidth: .infinity, alignment: .trailing)
                     .opacity(rowOpacity(asset))
@@ -80,8 +79,9 @@ struct ContentView: View {
             .width(min: 60, ideal: 70)
 
             TableColumn("日額費用") { (asset: Asset) in
-                Text(asset.purchasePrice > 0 && asset.elapsedDays > 0
-                     ? String(format: "¥%.1f", asset.dailyCost) : "-")
+                Text(asset.disposed ? "-" :
+                     (asset.purchasePrice > 0 && asset.elapsedDays > 0
+                      ? String(format: "¥%.1f", asset.dailyCost) : "-"))
                     .monospacedDigit()
                     .frame(maxWidth: .infinity, alignment: .trailing)
                     .opacity(rowOpacity(asset))
