@@ -1,60 +1,712 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HomeKeeper - 家庭管理アプリ</title>
-  <link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HomeKeeper - 家電・耐久消費財管理アプリ for macOS</title>
+    <meta name="description" content="HomeKeeperは、macOSネイティブの家電・耐久消費財管理アプリです。購入履歴、耐用年数、コストを美しいダッシュボードで一元管理。">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --blue: #0071e3;
+            --blue-hover: #0077ED;
+            --black: #1d1d1f;
+            --gray-dark: #86868b;
+            --gray-light: #f5f5f7;
+            --white: #ffffff;
+            --nav-h: 52px;
+        }
+
+        html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+            color: var(--black);
+            background: var(--white);
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        /* ── Nav ────────────────────────────────── */
+        nav {
+            position: fixed; top: 0; width: 100%; z-index: 100;
+            height: var(--nav-h);
+            background: rgba(251,251,253,0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+        .nav-inner {
+            max-width: 1024px; margin: 0 auto; height: 100%;
+            padding: 0 22px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .nav-logo {
+            font-size: 1.2rem; font-weight: 700; color: var(--black);
+            text-decoration: none; letter-spacing: -0.02em;
+        }
+        .nav-links { display: flex; gap: 28px; list-style: none; }
+        .nav-links a {
+            color: var(--black); text-decoration: none;
+            font-size: 0.82rem; font-weight: 400; opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+        .nav-links a:hover { opacity: 1; }
+
+        @media (max-width: 734px) {
+            .nav-links { gap: 16px; }
+            .nav-links a { font-size: 0.75rem; }
+        }
+
+        /* ── Hero (Dark) ────────────────────────── */
+        .hero {
+            margin-top: var(--nav-h);
+            min-height: calc(100vh - var(--nav-h));
+            background: linear-gradient(180deg, #000 0%, #1d1d1f 100%);
+            display: flex; align-items: center; justify-content: center;
+            text-align: center; padding: 80px 24px;
+            position: relative; overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute; top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(ellipse at 50% 0%, rgba(0,113,227,0.12) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .hero-inner { position: relative; max-width: 800px; }
+        .hero-badge {
+            display: inline-block;
+            font-size: 0.8rem; font-weight: 500; letter-spacing: 0.04em;
+            color: var(--blue); margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        .hero h1 {
+            font-size: clamp(3rem, 8vw, 5rem);
+            font-weight: 700; letter-spacing: -0.04em;
+            line-height: 1.05; color: #fff;
+            margin-bottom: 20px;
+        }
+        .hero h1 .gradient {
+            background: linear-gradient(90deg, #42a5f5, #7e57c2, #ec407a);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero-sub {
+            font-size: clamp(1.05rem, 2.5vw, 1.35rem);
+            color: var(--gray-dark); font-weight: 400;
+            max-width: 600px; margin: 0 auto 44px;
+            line-height: 1.5;
+        }
+        .hero-cta { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+        .btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-family: inherit; font-size: 1rem; font-weight: 400;
+            border: none; border-radius: 980px; cursor: pointer;
+            padding: 12px 28px; text-decoration: none;
+            transition: background 0.3s, transform 0.2s;
+        }
+        .btn-blue { background: var(--blue); color: #fff; }
+        .btn-blue:hover { background: var(--blue-hover); }
+        .btn-outline {
+            background: transparent; color: var(--blue);
+            border: 1px solid rgba(0,113,227,0.4);
+        }
+        .btn-outline:hover { background: rgba(0,113,227,0.08); }
+        .btn svg { width: 16px; height: 16px; fill: currentColor; }
+
+        .hero-app-preview {
+            margin-top: 64px;
+            max-width: 680px; width: 100%; margin-left: auto; margin-right: auto;
+        }
+        .window-mock {
+            background: #2a2a2e; border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08);
+        }
+        .window-titlebar {
+            height: 36px; background: #3a3a3e;
+            display: flex; align-items: center; padding: 0 14px; gap: 8px;
+        }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot-r { background: #ff5f57; }
+        .dot-y { background: #febc2e; }
+        .dot-g { background: #28c840; }
+        .window-body {
+            padding: 24px; min-height: 320px;
+            display: grid; gap: 16px;
+        }
+        .mock-cards { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+        .mock-card {
+            background: #3a3a3e; border-radius: 10px; padding: 16px;
+            text-align: center;
+        }
+        .mock-card .num { font-size: 1.6rem; font-weight: 700; color: #fff; }
+        .mock-card .lbl { font-size: 0.7rem; color: var(--gray-dark); margin-top: 4px; }
+        .mock-chart {
+            background: #3a3a3e; border-radius: 10px; padding: 20px;
+        }
+        .chart-bars { display: flex; align-items: flex-end; gap: 12px; height: 120px; padding-top: 8px; }
+        .chart-bar {
+            flex: 1; border-radius: 6px 6px 0 0;
+            transition: height 1.5s cubic-bezier(0.22,1,0.36,1);
+        }
+
+        @media (max-width: 734px) {
+            .hero { padding: 60px 20px; }
+            .mock-cards { grid-template-columns: repeat(2,1fr); }
+            .chart-bars { height: 80px; }
+        }
+
+        /* ── Section base ───────────────────────── */
+        .section { padding: 120px 24px; }
+        .section-inner { max-width: 1024px; margin: 0 auto; }
+        .section-light { background: var(--white); }
+        .section-gray { background: var(--gray-light); }
+        .section-dark { background: var(--black); color: #fff; }
+        .section-dark .label { color: var(--blue); }
+        .section-dark .desc { color: var(--gray-dark); }
+
+        .label {
+            font-size: 0.8rem; font-weight: 600; letter-spacing: 0.04em;
+            text-transform: uppercase; color: var(--blue);
+            margin-bottom: 8px;
+        }
+        .heading {
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 700; letter-spacing: -0.03em;
+            line-height: 1.1; margin-bottom: 16px;
+        }
+        .desc {
+            font-size: 1.1rem; color: var(--gray-dark);
+            max-width: 640px; line-height: 1.6;
+        }
+        .center { text-align: center; }
+        .center .desc { margin: 0 auto; }
+
+        @media (max-width: 734px) {
+            .section { padding: 80px 20px; }
+        }
+
+        /* ── Features (Apple-style stacked) ─────── */
+        .features-grid {
+            margin-top: 72px;
+            display: grid; grid-template-columns: repeat(3,1fr); gap: 20px;
+        }
+        .f-card {
+            background: var(--gray-light); border-radius: 20px;
+            padding: 48px 36px; text-align: center;
+            transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), box-shadow 0.4s;
+        }
+        .f-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.06);
+        }
+        .f-icon {
+            width: 56px; height: 56px; border-radius: 14px;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 1.6rem; margin-bottom: 20px;
+            background: linear-gradient(135deg, #e3f2fd, #ede7f6);
+        }
+        .f-card h3 {
+            font-size: 1.25rem; font-weight: 600; letter-spacing: -0.01em;
+            margin-bottom: 8px;
+        }
+        .f-card p { font-size: 0.92rem; color: var(--gray-dark); line-height: 1.6; }
+
+        @media (max-width: 734px) {
+            .features-grid { grid-template-columns: 1fr; gap: 16px; }
+            .f-card { padding: 36px 24px; }
+        }
+
+        /* ── Highlights (side-by-side) ──────────── */
+        .highlight {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+            align-items: center; margin-top: 80px;
+        }
+        .highlight.reverse { direction: rtl; }
+        .highlight.reverse > * { direction: ltr; }
+        .hl-visual {
+            border-radius: 20px; overflow: hidden;
+            background: #2a2a2e;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+        }
+        .hl-visual-inner {
+            padding: 32px; min-height: 340px;
+            display: flex; flex-direction: column; justify-content: center;
+        }
+        .hl-text .label { margin-bottom: 8px; }
+        .hl-text .heading { font-size: clamp(1.6rem, 4vw, 2.4rem); margin-bottom: 16px; }
+        .hl-text .desc { font-size: 1rem; }
+        .hl-text ul {
+            list-style: none; margin-top: 20px;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .hl-text li {
+            font-size: 0.95rem; color: var(--gray-dark);
+            padding-left: 24px; position: relative;
+        }
+        .hl-text li::before {
+            content: ''; position: absolute; left: 0; top: 7px;
+            width: 10px; height: 10px; border-radius: 50%;
+            background: var(--blue);
+        }
+
+        /* Life gauge mini chart */
+        .life-gauges { display: flex; flex-direction: column; gap: 14px; }
+        .gauge-row { display: flex; align-items: center; gap: 12px; }
+        .gauge-label { color: #ccc; font-size: 0.75rem; width: 80px; text-align: right; white-space: nowrap; }
+        .gauge-bar { flex: 1; height: 16px; background: #444; border-radius: 8px; overflow: hidden; }
+        .gauge-fill { height: 100%; border-radius: 8px; transition: width 1.5s cubic-bezier(0.22,1,0.36,1); }
+
+        @media (max-width: 734px) {
+            .highlight, .highlight.reverse { grid-template-columns: 1fr; gap: 40px; direction: ltr; }
+            .hl-visual-inner { min-height: 240px; padding: 24px; }
+        }
+
+        /* ── Category table ─────────────────────── */
+        .cat-grid {
+            margin-top: 48px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px;
+        }
+        .cat-item {
+            background: var(--white); border-radius: 14px;
+            padding: 20px 24px;
+            display: flex; justify-content: space-between; align-items: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .section-gray .cat-item { background: var(--white); }
+        .cat-item:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+        .cat-name { font-size: 0.95rem; font-weight: 500; }
+        .cat-years {
+            font-size: 0.85rem; font-weight: 600; color: var(--blue);
+            background: rgba(0,113,227,0.08); padding: 4px 12px;
+            border-radius: 980px;
+        }
+
+        /* ── Steps ──────────────────────────────── */
+        .steps { margin-top: 64px; display: grid; grid-template-columns: repeat(3,1fr); gap: 32px; }
+        .step-card { text-align: center; }
+        .step-num {
+            width: 48px; height: 48px; border-radius: 50%;
+            background: var(--blue); color: #fff;
+            font-size: 1.2rem; font-weight: 700;
+            display: inline-flex; align-items: center; justify-content: center;
+            margin-bottom: 20px;
+        }
+        .step-card h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; }
+        .step-card p { font-size: 0.9rem; color: var(--gray-dark); line-height: 1.6; }
+        .step-card code {
+            display: block; margin-top: 12px;
+            font-size: 0.8rem; color: var(--gray-dark);
+            background: var(--gray-light); padding: 8px 12px; border-radius: 8px;
+            font-family: 'SF Mono', Monaco, Menlo, monospace;
+        }
+        .section-dark .step-card code { background: rgba(255,255,255,0.06); color: #ccc; }
+
+        @media (max-width: 734px) {
+            .steps { grid-template-columns: 1fr; gap: 40px; }
+        }
+
+        /* ── System requirements ────────────────── */
+        .req-row {
+            margin-top: 48px;
+            display: grid; grid-template-columns: repeat(3,1fr); gap: 24px;
+        }
+        .req-item { text-align: center; }
+        .req-icon { font-size: 2.4rem; margin-bottom: 12px; }
+        .req-item h4 { font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
+        .req-item p { font-size: 0.88rem; color: var(--gray-dark); }
+        .section-dark .req-item p { color: var(--gray-dark); }
+
+        @media (max-width: 734px) {
+            .req-row { grid-template-columns: 1fr; gap: 32px; }
+        }
+
+        /* ── CTA ────────────────────────────────── */
+        .cta {
+            padding: 120px 24px;
+            text-align: center;
+            background: linear-gradient(180deg, var(--gray-light) 0%, var(--white) 100%);
+        }
+        .cta .heading { margin-bottom: 12px; }
+        .cta .desc { margin: 0 auto 40px; }
+
+        /* ── Footer ─────────────────────────────── */
+        footer {
+            padding: 20px 24px;
+            border-top: 1px solid rgba(0,0,0,0.08);
+            background: var(--gray-light);
+        }
+        .footer-inner {
+            max-width: 1024px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 12px;
+        }
+        .footer-inner p { font-size: 0.8rem; color: var(--gray-dark); }
+        .footer-inner a { color: var(--blue); text-decoration: none; font-size: 0.8rem; }
+        .footer-inner a:hover { text-decoration: underline; }
+        .footer-links { display: flex; gap: 20px; }
+
+        /* ── Scroll reveal ──────────────────────── */
+        .reveal {
+            opacity: 0; transform: translateY(32px);
+            transition: opacity 0.8s cubic-bezier(0.22,1,0.36,1), transform 0.8s cubic-bezier(0.22,1,0.36,1);
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .reveal-d1 { transition-delay: 0.1s; }
+        .reveal-d2 { transition-delay: 0.2s; }
+        .reveal-d3 { transition-delay: 0.3s; }
+        .reveal-d4 { transition-delay: 0.4s; }
+        .reveal-d5 { transition-delay: 0.5s; }
+    </style>
 </head>
 <body>
-  <header class="hero">
-    <nav class="nav">
-      <div class="nav-brand">HomeKeeper</div>
-      <ul class="nav-links">
-        <li><a href="#features">機能</a></li>
-        <li><a href="#about">概要</a></li>
-        <li><a href="https://github.com/ivytech-dev/HomeKeeper">GitHub</a></li>
-      </ul>
-    </nav>
-    <div class="hero-content">
-      <h1>HomeKeeper</h1>
-      <p class="hero-subtitle">家庭の管理をもっとスマートに</p>
-      <p class="hero-description">プッシュ通知で家事のリマインダーやスケジュールを管理。<br>毎日の暮らしをサポートするiOSアプリです。</p>
-      <a href="https://github.com/ivytech-dev/HomeKeeper" class="cta-button">GitHub で見る</a>
+
+<!-- Nav -->
+<nav>
+    <div class="nav-inner">
+        <a href="#" class="nav-logo">HomeKeeper</a>
+        <ul class="nav-links">
+            <li><a href="#features">機能</a></li>
+            <li><a href="#dashboard">ダッシュボード</a></li>
+            <li><a href="#categories">カテゴリ</a></li>
+            <li><a href="#install">インストール</a></li>
+            <li><a href="https://github.com/ivytech-dev/HomeKeeper">GitHub</a></li>
+        </ul>
     </div>
-  </header>
+</nav>
 
-  <section id="features" class="features">
-    <h2>主な機能</h2>
-    <div class="feature-grid">
-      <div class="feature-card">
-        <div class="feature-icon">&#128276;</div>
-        <h3>プッシュ通知</h3>
-        <p>タスクの期限や予定をプッシュ通知でお知らせ。忘れがちな家事も見逃しません。</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">&#128203;</div>
-        <h3>タスク管理</h3>
-        <p>掃除・洗濯・買い物などをカテゴリ別に整理。家族で共有も可能です。</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">&#128197;</div>
-        <h3>スケジュール</h3>
-        <p>繰り返しタスクの自動スケジュール設定。定期的な家事を楽に管理できます。</p>
-      </div>
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-inner">
+        <p class="hero-badge reveal">macOS Native App</p>
+        <h1 class="reveal reveal-d1">
+            あなたの暮らしを、<br><span class="gradient">賢く管理する。</span>
+        </h1>
+        <p class="hero-sub reveal reveal-d2">
+            HomeKeeperは、家電や耐久消費財の購入履歴・耐用年数・コストを<br>
+            美しいダッシュボードで一元管理するmacOSアプリです。
+        </p>
+        <div class="hero-cta reveal reveal-d3">
+            <a href="https://github.com/ivytech-dev/HomeKeeper/releases" class="btn btn-blue">
+                <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                GitHub でダウンロード
+            </a>
+            <a href="#features" class="btn btn-outline">詳しく見る</a>
+        </div>
+
+        <!-- App Preview Mock -->
+        <div class="hero-app-preview reveal reveal-d4">
+            <div class="window-mock">
+                <div class="window-titlebar">
+                    <span class="dot dot-r"></span>
+                    <span class="dot dot-y"></span>
+                    <span class="dot dot-g"></span>
+                </div>
+                <div class="window-body">
+                    <div class="mock-cards">
+                        <div class="mock-card">
+                            <div class="num" style="color:#42a5f5">17</div>
+                            <div class="lbl">稼働中</div>
+                        </div>
+                        <div class="mock-card">
+                            <div class="num" style="color:#78909c">2</div>
+                            <div class="lbl">除却済み</div>
+                        </div>
+                        <div class="mock-card">
+                            <div class="num" style="color:#66bb6a">¥1.6M</div>
+                            <div class="lbl">合計金額</div>
+                        </div>
+                        <div class="mock-card">
+                            <div class="num" style="color:#ef5350">3</div>
+                            <div class="lbl">耐用年数超過</div>
+                        </div>
+                    </div>
+                    <div class="mock-chart">
+                        <div class="chart-bars" id="heroChart">
+                            <div class="chart-bar" style="background:linear-gradient(to top,#42a5f5,#7e57c2);height:0%"></div>
+                            <div class="chart-bar" style="background:linear-gradient(to top,#42a5f5,#7e57c2);height:0%"></div>
+                            <div class="chart-bar" style="background:linear-gradient(to top,#42a5f5,#7e57c2);height:0%"></div>
+                            <div class="chart-bar" style="background:linear-gradient(to top,#42a5f5,#7e57c2);height:0%"></div>
+                            <div class="chart-bar" style="background:linear-gradient(to top,#42a5f5,#7e57c2);height:0%"></div>
+                            <div class="chart-bar" style="background:linear-gradient(to top,#42a5f5,#7e57c2);height:0%"></div>
+                            <div class="chart-bar" style="background:linear-gradient(to top,#42a5f5,#7e57c2);height:0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </section>
+</section>
 
-  <section id="about" class="about">
-    <h2>HomeKeeper について</h2>
-    <p>HomeKeeperは、SwiftUI で構築されたiOS向け家庭管理アプリです。<br>
-    シンプルで使いやすいインターフェースと、プッシュ通知による確実なリマインダー機能で、<br>
-    日々の家事管理をサポートします。</p>
-  </section>
+<!-- Features -->
+<section class="section section-light" id="features">
+    <div class="section-inner center">
+        <p class="label reveal">Features</p>
+        <h2 class="heading reveal reveal-d1">すべてを、ひとつの場所で。</h2>
+        <p class="desc reveal reveal-d2">家電の購入履歴から耐用年数の管理まで、HomeKeeperがスマートにサポートします。</p>
 
-  <footer class="footer">
-    <p>&copy; 2026 HomeKeeper by ivytech-dev</p>
-    <p><a href="https://github.com/ivytech-dev/HomeKeeper">GitHub</a></p>
-  </footer>
+        <div class="features-grid">
+            <div class="f-card reveal reveal-d1">
+                <div class="f-icon">📊</div>
+                <h3>ダッシュボード</h3>
+                <p>資産の状況をグラフで一目で把握。購入年別推移と耐用年数消化率をビジュアルに表示します。</p>
+            </div>
+            <div class="f-card reveal reveal-d2">
+                <div class="f-icon">📋</div>
+                <h3>一覧管理</h3>
+                <p>全資産を表形式で整理。列ヘッダーをクリックするだけで自在にソートできます。</p>
+            </div>
+            <div class="f-card reveal reveal-d3">
+                <div class="f-icon">🏷️</div>
+                <h3>20カテゴリ</h3>
+                <p>テレビから家具まで20の定義済みカテゴリ。選択するだけで標準耐用年数が自動設定されます。</p>
+            </div>
+            <div class="f-card reveal reveal-d1">
+                <div class="f-icon">📂</div>
+                <h3>CSV入出力</h3>
+                <p>4種の日付形式に対応したCSVインポート/エクスポート。Excelとの連携もスムーズです。</p>
+            </div>
+            <div class="f-card reveal reveal-d2">
+                <div class="f-icon">♻️</div>
+                <h3>除却管理</h3>
+                <p>処分した資産を除却マーク。表示/非表示をワンクリックで切り替えられます。</p>
+            </div>
+            <div class="f-card reveal reveal-d3">
+                <div class="f-icon">💾</div>
+                <h3>自動保存</h3>
+                <p>操作のたびにJSON形式で自動保存。データの損失を心配する必要はありません。</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Dashboard Highlight -->
+<section class="section section-dark" id="dashboard">
+    <div class="section-inner">
+        <div class="highlight">
+            <div class="hl-text reveal">
+                <p class="label">Dashboard</p>
+                <h2 class="heading" style="color:#fff">資産の全体像を、<br>一瞬で。</h2>
+                <p class="desc">サマリーカードとグラフで、保有資産の状況を視覚的に把握。買い替えの時期も色分けで直感的にわかります。</p>
+                <ul>
+                    <li style="color:#ccc">稼働中・除却済み・合計金額・超過数のサマリー</li>
+                    <li style="color:#ccc">年別購入推移の棒グラフ</li>
+                    <li style="color:#ccc">耐用年数消化率の色分け表示</li>
+                </ul>
+            </div>
+            <div class="hl-visual reveal reveal-d2">
+                <div class="hl-visual-inner">
+                    <div class="life-gauges" id="gauges">
+                        <div class="gauge-row"><span class="gauge-label">冷蔵庫</span><div class="gauge-bar"><div class="gauge-fill" data-w="52" style="width:0;background:linear-gradient(90deg,#43a047,#66bb6a)"></div></div></div>
+                        <div class="gauge-row"><span class="gauge-label">エアコン</span><div class="gauge-bar"><div class="gauge-fill" data-w="38" style="width:0;background:linear-gradient(90deg,#43a047,#66bb6a)"></div></div></div>
+                        <div class="gauge-row"><span class="gauge-label">洗濯機</span><div class="gauge-bar"><div class="gauge-fill" data-w="71" style="width:0;background:linear-gradient(90deg,#fb8c00,#ffa726)"></div></div></div>
+                        <div class="gauge-row"><span class="gauge-label">テレビ</span><div class="gauge-bar"><div class="gauge-fill" data-w="88" style="width:0;background:linear-gradient(90deg,#fb8c00,#ff7043)"></div></div></div>
+                        <div class="gauge-row"><span class="gauge-label">PC</span><div class="gauge-bar"><div class="gauge-fill" data-w="110" style="width:0;background:linear-gradient(90deg,#e53935,#ef5350)"></div></div></div>
+                        <div class="gauge-row"><span class="gauge-label">スマートフォン</span><div class="gauge-bar"><div class="gauge-fill" data-w="95" style="width:0;background:linear-gradient(90deg,#fb8c00,#e53935)"></div></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- List Highlight -->
+<section class="section section-light">
+    <div class="section-inner">
+        <div class="highlight reverse">
+            <div class="hl-text reveal">
+                <p class="label">List View</p>
+                <h2 class="heading">すべての資産を、<br>一覧で。</h2>
+                <p class="desc">分類・製品名・購入店・購入日・金額・経過年数・日額費用・耐用年数を表形式で表示。耐用年数を超えた資産は赤字で、除却済みはグレーで直感的に確認できます。</p>
+                <ul>
+                    <li>任意の列でワンクリックソート</li>
+                    <li>右クリックで編集・除却・削除</li>
+                    <li>ダブルクリックで詳細編集</li>
+                </ul>
+            </div>
+            <div class="hl-visual reveal reveal-d2">
+                <div class="hl-visual-inner" style="padding:16px">
+                    <table style="width:100%;border-collapse:collapse;font-size:0.72rem;color:#ccc">
+                        <thead><tr style="border-bottom:1px solid #555">
+                            <th style="padding:8px;text-align:left;color:#888;font-weight:500">分類</th>
+                            <th style="padding:8px;text-align:left;color:#888;font-weight:500">製品</th>
+                            <th style="padding:8px;text-align:right;color:#888;font-weight:500">金額</th>
+                            <th style="padding:8px;text-align:right;color:#888;font-weight:500">経過年</th>
+                            <th style="padding:8px;text-align:right;color:#888;font-weight:500">耐用年</th>
+                        </tr></thead>
+                        <tbody>
+                            <tr style="border-bottom:1px solid #3a3a3e"><td style="padding:8px">冷蔵庫</td><td style="padding:8px">NR-F507HPX 501L</td><td style="padding:8px;text-align:right">¥198,000</td><td style="padding:8px;text-align:right">5.6</td><td style="padding:8px;text-align:right">10</td></tr>
+                            <tr style="border-bottom:1px solid #3a3a3e"><td style="padding:8px">エアコン</td><td style="padding:8px">MSZ-ZW5622S 霧ヶ峰</td><td style="padding:8px;text-align:right">¥168,000</td><td style="padding:8px;text-align:right">3.5</td><td style="padding:8px;text-align:right">10</td></tr>
+                            <tr style="border-bottom:1px solid #3a3a3e;color:#ef5350"><td style="padding:8px">PC</td><td style="padding:8px">MacBook Air M2</td><td style="padding:8px;text-align:right">¥164,800</td><td style="padding:8px;text-align:right;font-weight:600">4.8</td><td style="padding:8px;text-align:right">4</td></tr>
+                            <tr style="border-bottom:1px solid #3a3a3e;opacity:0.4"><td style="padding:8px">洗濯機</td><td style="padding:8px">NA-F50B12 全自動 5kg</td><td style="padding:8px;text-align:right">¥32,800</td><td style="padding:8px;text-align:right">-</td><td style="padding:8px;text-align:right">7</td></tr>
+                            <tr><td style="padding:8px">カメラ</td><td style="padding:8px">α7 IV ミラーレス一眼</td><td style="padding:8px;text-align:right">¥328,900</td><td style="padding:8px;text-align:right">3.9</td><td style="padding:8px;text-align:right">5</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categories -->
+<section class="section section-gray" id="categories">
+    <div class="section-inner center">
+        <p class="label reveal">Categories</p>
+        <h2 class="heading reveal reveal-d1">20のカテゴリ。<br>最適な耐用年数。</h2>
+        <p class="desc reveal reveal-d2">メーカー補修部品保有期間や法定耐用年数に基づいた標準値を搭載。もちろんカスタマイズも自由です。</p>
+
+        <div class="cat-grid">
+            <div class="cat-item reveal"><span class="cat-name">テレビ</span><span class="cat-years">8年</span></div>
+            <div class="cat-item reveal"><span class="cat-name">冷蔵庫</span><span class="cat-years">10年</span></div>
+            <div class="cat-item reveal"><span class="cat-name">洗濯機</span><span class="cat-years">7年</span></div>
+            <div class="cat-item reveal"><span class="cat-name">掃除機</span><span class="cat-years">7年</span></div>
+            <div class="cat-item reveal"><span class="cat-name">エアコン</span><span class="cat-years">10年</span></div>
+            <div class="cat-item reveal"><span class="cat-name">電子レンジ</span><span class="cat-years">10年</span></div>
+            <div class="cat-item reveal"><span class="cat-name">炊飯器</span><span class="cat-years">6年</span></div>
+            <div class="cat-item reveal"><span class="cat-name">食洗機</span><span class="cat-years">7年</span></div>
+            <div class="cat-item reveal"><span class="cat-name">PC</span><span class="cat-years">4年</span></div>
+            <div class="cat-item reveal"><span class="cat-name">タブレット</span><span class="cat-years">4年</span></div>
+            <div class="cat-item reveal"><span class="cat-name">スマートフォン</span><span class="cat-years">3年</span></div>
+            <div class="cat-item reveal"><span class="cat-name">時計</span><span class="cat-years">10年</span></div>
+            <div class="cat-item reveal"><span class="cat-name">カメラ</span><span class="cat-years">5年</span></div>
+            <div class="cat-item reveal"><span class="cat-name">プリンター/複合機</span><span class="cat-years">5年</span></div>
+            <div class="cat-item reveal"><span class="cat-name">スキャナー</span><span class="cat-years">5年</span></div>
+            <div class="cat-item reveal"><span class="cat-name">ルータ/ネットワーク</span><span class="cat-years">5年</span></div>
+            <div class="cat-item reveal"><span class="cat-name">オーディオ</span><span class="cat-years">7年</span></div>
+            <div class="cat-item reveal"><span class="cat-name">照明</span><span class="cat-years">10年</span></div>
+            <div class="cat-item reveal"><span class="cat-name">家具</span><span class="cat-years">10年</span></div>
+            <div class="cat-item reveal"><span class="cat-name">その他</span><span class="cat-years">カスタム</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- Install -->
+<section class="section section-dark" id="install">
+    <div class="section-inner center">
+        <p class="label reveal">Get Started</p>
+        <h2 class="heading reveal reveal-d1" style="color:#fff">3ステップで、すぐに使える。</h2>
+
+        <div class="steps">
+            <div class="step-card reveal reveal-d1">
+                <div class="step-num">1</div>
+                <h3 style="color:#fff">ダウンロード</h3>
+                <p>GitHubのリリースページから最新版を取得します。</p>
+                <code>github.com/ivytech-dev/HomeKeeper</code>
+            </div>
+            <div class="step-card reveal reveal-d2">
+                <div class="step-num">2</div>
+                <h3 style="color:#fff">インストール</h3>
+                <p>アプリケーションフォルダにドラッグ&ドロップするだけ。</p>
+                <code>Applications/HomeKeeper.app</code>
+            </div>
+            <div class="step-card reveal reveal-d3">
+                <div class="step-num">3</div>
+                <h3 style="color:#fff">起動</h3>
+                <p>Launchpadまたは Spotlight から起動して、すぐに使い始められます。</p>
+                <code>⌘ Space → "HomeKeeper"</code>
+            </div>
+        </div>
+
+        <div class="req-row" style="margin-top:80px">
+            <div class="req-item reveal reveal-d1">
+                <div class="req-icon">🍎</div>
+                <h4 style="color:#fff">macOS 13+</h4>
+                <p>Ventura 以降に対応</p>
+            </div>
+            <div class="req-item reveal reveal-d2">
+                <div class="req-icon">🖥️</div>
+                <h4 style="color:#fff">Universal Binary</h4>
+                <p>Apple Silicon / Intel 両対応</p>
+            </div>
+            <div class="req-item reveal reveal-d3">
+                <div class="req-icon">⚡</div>
+                <h4 style="color:#fff">SwiftUI Native</h4>
+                <p>軽量・高速・省電力</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+    <p class="label reveal">Open Source</p>
+    <h2 class="heading reveal reveal-d1">あなたの暮らしを、<br>もっとスマートに。</h2>
+    <p class="desc reveal reveal-d2" style="margin:0 auto 40px">HomeKeeperはオープンソース（MIT License）です。<br>自由に使って、カスタマイズしてください。</p>
+    <div class="reveal reveal-d3">
+        <a href="https://github.com/ivytech-dev/HomeKeeper/releases" class="btn btn-blue">
+            <svg viewBox="0 0 16 16" style="width:16px;height:16px;fill:#fff"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            GitHub でダウンロード
+        </a>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <div class="footer-inner">
+        <div style="display:flex;align-items:center;gap:10px">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="24" height="24">
+                <defs><linearGradient id="fi" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#42a5f5"/><stop offset="100%" style="stop-color:#7e57c2"/></linearGradient></defs>
+                <rect width="120" height="120" rx="26" fill="#0a0a1a"/>
+                <g transform="translate(60,60)"><path d="M0,-40 L6,-9 0,-3 -6,-9Z" fill="url(#fi)"/><path d="M0,40 L6,9 0,3 -6,9Z" fill="url(#fi)"/><path d="M-40,0 L-9,6 -3,0 -9,-6Z" fill="url(#fi)"/><path d="M40,0 L9,6 3,0 9,-6Z" fill="url(#fi)"/><circle r="4" fill="url(#fi)"/><circle r="1.5" fill="#fff" opacity="0.8"/></g>
+            </svg>
+            <p>&copy; 2025 <a href="https://github.com/ivytech-dev">Polaris Technologies</a></p>
+        </div>
+        <div class="footer-links">
+            <a href="https://github.com/ivytech-dev/HomeKeeper">GitHub</a>
+            <a href="https://github.com/ivytech-dev/HomeKeeper/releases">Releases</a>
+            <a href="https://github.com/ivytech-dev/HomeKeeper/issues">Issues</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+// Scroll reveal
+const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+}, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// Hero chart animation
+setTimeout(() => {
+    const heights = [35, 55, 40, 70, 90, 65, 50];
+    document.querySelectorAll('#heroChart .chart-bar').forEach((bar, i) => {
+        setTimeout(() => { bar.style.height = heights[i] + '%'; }, i * 100);
+    });
+}, 800);
+
+// Gauge animation
+const gaugeObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+        if (e.isIntersecting) {
+            e.target.querySelectorAll('.gauge-fill').forEach(g => {
+                const w = Math.min(parseInt(g.dataset.w), 120);
+                setTimeout(() => { g.style.width = w + '%'; }, 200);
+            });
+            gaugeObs.unobserve(e.target);
+        }
+    });
+}, { threshold: 0.3 });
+const gaugesEl = document.getElementById('gauges');
+if (gaugesEl) gaugeObs.observe(gaugesEl);
+
+// Smooth anchor scrolling
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+        e.preventDefault();
+        const t = document.querySelector(a.getAttribute('href'));
+        if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+});
+
+// Nav shadow on scroll
+const nav = document.querySelector('nav');
+window.addEventListener('scroll', () => {
+    nav.style.borderBottomColor = window.scrollY > 10 ? 'rgba(0,0,0,0.1)' : 'rgba(0,0,0,0.06)';
+});
+</script>
+
 </body>
 </html>
