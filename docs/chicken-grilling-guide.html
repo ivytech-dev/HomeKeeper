@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>鶏もも肉のグリル完全ガイド - HomeKeeper</title>
+    <meta name="description" content="グリルで鶏もも肉を完璧に焼くための時間・温度・テクニックを解説。骨付き・骨なし別の焼き時間目安と、プロが教えるコツを紹介します。">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --blue: #0071e3;
+            --blue-hover: #0077ED;
+            --black: #1d1d1f;
+            --gray-dark: #86868b;
+            --gray-light: #f5f5f7;
+            --white: #ffffff;
+            --nav-h: 52px;
+            --orange: #ff6b35;
+            --orange-light: #fff3ee;
+        }
+
+        html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+            color: var(--black);
+            background: var(--white);
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        /* ── Nav ────────────────────────────────── */
+        nav {
+            position: fixed; top: 0; width: 100%; z-index: 100;
+            height: var(--nav-h);
+            background: rgba(251,251,253,0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+        .nav-inner {
+            max-width: 1024px; margin: 0 auto; height: 100%;
+            padding: 0 22px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .nav-logo {
+            font-size: 1.2rem; font-weight: 700; color: var(--black);
+            text-decoration: none; letter-spacing: -0.02em;
+        }
+        .nav-links { display: flex; gap: 28px; list-style: none; }
+        .nav-links a {
+            color: var(--black); text-decoration: none;
+            font-size: 0.82rem; font-weight: 400; opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+        .nav-links a:hover { opacity: 1; }
+
+        @media (max-width: 734px) {
+            .nav-links { gap: 16px; }
+            .nav-links a { font-size: 0.75rem; }
+        }
+
+        /* ── Hero ───────────────────────────────── */
+        .hero {
+            margin-top: var(--nav-h);
+            min-height: 60vh;
+            background: linear-gradient(160deg, #1a1a1a 0%, #2d1a0e 50%, #1a1a1a 100%);
+            display: flex; align-items: center; justify-content: center;
+            text-align: center; padding: 80px 24px;
+            position: relative; overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute; top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(ellipse at 50% 60%, rgba(255,107,53,0.18) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .hero-inner { position: relative; max-width: 760px; }
+        .hero-badge {
+            display: inline-block;
+            font-size: 0.8rem; font-weight: 500; letter-spacing: 0.06em;
+            color: var(--orange); margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        .hero h1 {
+            font-size: clamp(2.6rem, 7vw, 4.4rem);
+            font-weight: 700; letter-spacing: -0.04em;
+            line-height: 1.05; color: #fff;
+            margin-bottom: 20px;
+        }
+        .hero h1 .gradient {
+            background: linear-gradient(90deg, #ff9a56, #ff6b35, #ff4500);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero-sub {
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
+            color: #aaa; font-weight: 400;
+            max-width: 560px; margin: 0 auto 44px;
+            line-height: 1.6;
+        }
+
+        /* ── Section base ───────────────────────── */
+        .section { padding: 100px 24px; }
+        .section-inner { max-width: 1024px; margin: 0 auto; }
+        .section-light { background: var(--white); }
+        .section-gray { background: var(--gray-light); }
+        .section-dark { background: #1d1d1f; color: #fff; }
+        .section-warm { background: var(--orange-light); }
+
+        .label {
+            font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em;
+            text-transform: uppercase; color: var(--orange);
+            margin-bottom: 8px;
+        }
+        .heading {
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 700; letter-spacing: -0.03em;
+            line-height: 1.1; margin-bottom: 16px;
+        }
+        .desc {
+            font-size: 1.05rem; color: var(--gray-dark);
+            max-width: 640px; line-height: 1.7;
+        }
+        .center { text-align: center; }
+        .center .desc { margin: 0 auto; }
+
+        @media (max-width: 734px) {
+            .section { padding: 72px 20px; }
+        }
+
+        /* ── Time cards ─────────────────────────── */
+        .time-cards {
+            margin-top: 64px;
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px;
+        }
+        .time-card {
+            background: var(--white);
+            border-radius: 24px; padding: 48px 40px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+            position: relative; overflow: hidden;
+        }
+        .time-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, #ff9a56, #ff6b35);
+        }
+        .time-card .card-icon {
+            font-size: 2.8rem; margin-bottom: 16px; display: block;
+        }
+        .time-card h3 {
+            font-size: 1.4rem; font-weight: 700;
+            letter-spacing: -0.02em; margin-bottom: 8px;
+        }
+        .time-card .sub {
+            font-size: 0.85rem; color: var(--gray-dark); margin-bottom: 28px;
+        }
+        .time-big {
+            font-size: 4rem; font-weight: 700;
+            background: linear-gradient(90deg, #ff9a56, #ff6b35);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.04em; line-height: 1; margin-bottom: 4px;
+        }
+        .time-unit {
+            font-size: 1rem; color: var(--gray-dark); font-weight: 400;
+            margin-bottom: 24px;
+        }
+        .time-detail {
+            list-style: none; display: flex; flex-direction: column; gap: 10px;
+        }
+        .time-detail li {
+            display: flex; gap: 10px; align-items: flex-start;
+            font-size: 0.9rem; color: #555;
+        }
+        .time-detail li::before {
+            content: '•'; color: var(--orange); font-size: 1.2rem;
+            line-height: 1.1; flex-shrink: 0;
+        }
+
+        @media (max-width: 734px) {
+            .time-cards { grid-template-columns: 1fr; }
+            .time-card { padding: 36px 28px; }
+        }
+
+        /* ── Temp bar ───────────────────────────── */
+        .temp-section {
+            margin-top: 64px;
+            background: var(--white); border-radius: 24px;
+            padding: 48px; box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+        }
+        .temp-section h3 {
+            font-size: 1.4rem; font-weight: 700; margin-bottom: 8px;
+        }
+        .temp-section p { font-size: 0.95rem; color: var(--gray-dark); margin-bottom: 32px; }
+        .temp-bar-wrap { position: relative; }
+        .temp-scale {
+            display: flex; justify-content: space-between;
+            font-size: 0.75rem; color: var(--gray-dark); margin-bottom: 8px;
+        }
+        .temp-bar {
+            width: 100%; height: 24px;
+            background: linear-gradient(90deg, #4fc3f7 0%, #66bb6a 30%, #ffa726 60%, #ff6b35 80%, #e53935 100%);
+            border-radius: 12px; position: relative;
+        }
+        .temp-marker {
+            position: absolute; top: 50%; transform: translate(-50%, -50%);
+            width: 28px; height: 28px; border-radius: 50%;
+            background: #fff; border: 3px solid var(--orange);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .temp-marker-label {
+            position: absolute; top: 36px; transform: translateX(-50%);
+            font-size: 0.8rem; font-weight: 600; color: var(--black);
+            white-space: nowrap;
+            background: var(--white); padding: 2px 8px;
+            border-radius: 6px; box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+        }
+        .temp-bar-wrap { margin-bottom: 60px; }
+
+        @media (max-width: 734px) {
+            .temp-section { padding: 32px 24px; }
+        }
+
+        /* ── Steps ──────────────────────────────── */
+        .steps-grid {
+            margin-top: 64px;
+            display: grid; grid-template-columns: 1fr;
+            gap: 0;
+        }
+        .step-row {
+            display: grid; grid-template-columns: 80px 1fr; gap: 24px;
+            align-items: flex-start; padding: 32px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+        .step-row:last-child { border-bottom: none; }
+        .step-num-wrap { display: flex; flex-direction: column; align-items: center; }
+        .step-num {
+            width: 48px; height: 48px; border-radius: 50%;
+            background: linear-gradient(135deg, #ff9a56, #ff6b35);
+            color: #fff; font-size: 1.2rem; font-weight: 700;
+            display: inline-flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .step-line {
+            width: 2px; flex: 1; min-height: 32px;
+            background: linear-gradient(180deg, #ff9a56 0%, transparent 100%);
+            margin-top: 8px;
+        }
+        .step-row:last-child .step-line { display: none; }
+        .step-content { padding-top: 8px; }
+        .step-content h3 {
+            font-size: 1.15rem; font-weight: 600; margin-bottom: 8px;
+        }
+        .step-content p { font-size: 0.92rem; color: #555; line-height: 1.7; }
+        .step-content .tip {
+            margin-top: 12px; padding: 10px 16px;
+            background: var(--orange-light); border-radius: 10px;
+            font-size: 0.85rem; color: #c0440a;
+            border-left: 3px solid var(--orange);
+        }
+
+        @media (max-width: 734px) {
+            .step-row { grid-template-columns: 56px 1fr; gap: 16px; }
+        }
+
+        /* ── Tips grid ──────────────────────────── */
+        .tips-grid {
+            margin-top: 64px;
+            display: grid; grid-template-columns: repeat(3,1fr); gap: 20px;
+        }
+        .tip-card {
+            background: #1d1d1f; border-radius: 20px; padding: 36px 28px;
+            text-align: center;
+        }
+        .tip-icon {
+            font-size: 2.2rem; margin-bottom: 16px; display: block;
+        }
+        .tip-card h3 {
+            font-size: 1.05rem; font-weight: 600; color: #fff;
+            margin-bottom: 8px;
+        }
+        .tip-card p { font-size: 0.88rem; color: var(--gray-dark); line-height: 1.6; }
+
+        @media (max-width: 734px) {
+            .tips-grid { grid-template-columns: 1fr; gap: 14px; }
+            .tip-card { padding: 28px 24px; }
+        }
+
+        /* ── Safety table ───────────────────────── */
+        .safety-table {
+            margin-top: 48px; width: 100%;
+            border-collapse: collapse; border-radius: 16px; overflow: hidden;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+        }
+        .safety-table thead { background: linear-gradient(90deg, #ff9a56, #ff6b35); }
+        .safety-table thead th {
+            padding: 16px 20px; text-align: left;
+            color: #fff; font-size: 0.9rem; font-weight: 600;
+        }
+        .safety-table tbody tr { background: var(--white); }
+        .safety-table tbody tr:nth-child(even) { background: var(--gray-light); }
+        .safety-table tbody td {
+            padding: 14px 20px; font-size: 0.9rem;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+        }
+        .safety-table .ok { color: #2e7d32; font-weight: 600; }
+        .safety-table .ng { color: #c62828; font-weight: 600; }
+        .safety-table .warn { color: #e65100; font-weight: 600; }
+
+        @media (max-width: 734px) {
+            .safety-table { font-size: 0.82rem; }
+            .safety-table thead th,
+            .safety-table tbody td { padding: 12px 14px; }
+        }
+
+        /* ── CTA ────────────────────────────────── */
+        .cta-section {
+            padding: 100px 24px; text-align: center;
+            background: linear-gradient(180deg, var(--gray-light) 0%, var(--white) 100%);
+        }
+        .cta-section .heading { margin-bottom: 12px; }
+        .cta-section .desc { margin: 0 auto 40px; }
+        .btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-family: inherit; font-size: 1rem; font-weight: 400;
+            border: none; border-radius: 980px; cursor: pointer;
+            padding: 12px 28px; text-decoration: none;
+            transition: background 0.3s, transform 0.2s;
+        }
+        .btn-orange { background: var(--orange); color: #fff; }
+        .btn-orange:hover { background: #e85a25; }
+        .btn-outline {
+            background: transparent; color: var(--black);
+            border: 1px solid rgba(0,0,0,0.2);
+        }
+        .btn-outline:hover { background: rgba(0,0,0,0.04); }
+        .cta-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+        /* ── Footer ─────────────────────────────── */
+        footer {
+            padding: 20px 24px;
+            border-top: 1px solid rgba(0,0,0,0.08);
+            background: var(--gray-light);
+        }
+        .footer-inner {
+            max-width: 1024px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 12px;
+        }
+        .footer-inner p { font-size: 0.8rem; color: var(--gray-dark); }
+        .footer-inner a { color: var(--blue); text-decoration: none; font-size: 0.8rem; }
+        .footer-inner a:hover { text-decoration: underline; }
+
+        /* ── Scroll reveal ──────────────────────── */
+        .reveal {
+            opacity: 0; transform: translateY(28px);
+            transition: opacity 0.8s cubic-bezier(0.22,1,0.36,1), transform 0.8s cubic-bezier(0.22,1,0.36,1);
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .reveal-d1 { transition-delay: 0.1s; }
+        .reveal-d2 { transition-delay: 0.2s; }
+        .reveal-d3 { transition-delay: 0.3s; }
+    </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+    <div class="nav-inner">
+        <a href="index.html" class="nav-logo">HomeKeeper</a>
+        <ul class="nav-links">
+            <li><a href="#time">焼き時間</a></li>
+            <li><a href="#steps">手順</a></li>
+            <li><a href="#tips">コツ</a></li>
+            <li><a href="#safety">安全温度</a></li>
+            <li><a href="index.html">アプリに戻る</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-inner">
+        <p class="hero-badge reveal">Grilling Guide</p>
+        <h1 class="reveal reveal-d1">
+            鶏もも肉を<br><span class="gradient">完璧に焼く。</span>
+        </h1>
+        <p class="hero-sub reveal reveal-d2">
+            グリルで鶏もも肉をジューシーに仕上げるための<br>
+            焼き時間・温度・テクニックを徹底解説。
+        </p>
+    </div>
+</section>
+
+<!-- Cooking Time -->
+<section class="section section-gray" id="time">
+    <div class="section-inner">
+        <div class="center reveal">
+            <p class="label">Cooking Time</p>
+            <h2 class="heading">グリルの焼き時間</h2>
+            <p class="desc">鶏もも肉の種類によって焼き時間が変わります。必ず中心温度を確認してください。</p>
+        </div>
+
+        <div class="time-cards reveal reveal-d1">
+            <!-- 骨付き -->
+            <div class="time-card">
+                <span class="card-icon">🍗</span>
+                <h3>骨付き鶏もも肉</h3>
+                <p class="sub">皮付き・骨あり（約350〜400g）</p>
+                <div class="time-big">35〜45</div>
+                <p class="time-unit">分（中火：約175〜190°C）</p>
+                <ul class="time-detail">
+                    <li>片面約15〜20分焼いてからひっくり返す</li>
+                    <li>皮面から先に焼くとパリッと仕上がる</li>
+                    <li>骨の近くまで火が通るよう中火をキープ</li>
+                    <li>中心温度が74°C以上になったら完成</li>
+                    <li>取り出し後5分休ませる（レスティング）</li>
+                </ul>
+            </div>
+
+            <!-- 骨なし -->
+            <div class="time-card">
+                <span class="card-icon">🥩</span>
+                <h3>骨なし鶏もも肉</h3>
+                <p class="sub">皮付き・骨なし（約200〜250g）</p>
+                <div class="time-big">15〜20</div>
+                <p class="time-unit">分（中強火：約190〜220°C）</p>
+                <ul class="time-detail">
+                    <li>片面約7〜10分ずつ、1〜2回ひっくり返す</li>
+                    <li>厚みを均一にするために包丁で切り込みを入れる</li>
+                    <li>皮面から焼き始め、パリッと色づいたら裏返す</li>
+                    <li>中心温度が74°C以上になったら完成</li>
+                    <li>取り出し後3〜5分休ませる（レスティング）</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Temperature gauge -->
+        <div class="temp-section reveal reveal-d2">
+            <h3>目標中心温度：74°C（165°F）</h3>
+            <p>食品安全のため、鶏肉の中心温度は必ず74°C以上を確認してください。肉厚計（温度計）を使うのがベストです。</p>
+            <div class="temp-bar-wrap">
+                <div class="temp-scale">
+                    <span>50°C</span>
+                    <span>60°C</span>
+                    <span>70°C</span>
+                    <span>80°C</span>
+                    <span>90°C</span>
+                    <span>100°C</span>
+                </div>
+                <div class="temp-bar">
+                    <!-- marker at ~74°C on 50-100°C scale → (74-50)/(100-50) = 48% -->
+                    <div class="temp-marker" style="left: 48%;">
+                        <div class="temp-marker-label">74°C 目標</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Steps -->
+<section class="section section-light" id="steps">
+    <div class="section-inner">
+        <div class="reveal">
+            <p class="label">How To</p>
+            <h2 class="heading">焼き方ステップ</h2>
+            <p class="desc">準備から仕上げまで、美味しく焼くための6ステップ。</p>
+        </div>
+
+        <div class="steps-grid reveal reveal-d1">
+            <div class="step-row">
+                <div class="step-num-wrap">
+                    <div class="step-num">1</div>
+                    <div class="step-line"></div>
+                </div>
+                <div class="step-content">
+                    <h3>下準備：常温に戻す</h3>
+                    <p>冷蔵庫から取り出した鶏もも肉を焼く<strong>30分前</strong>に室温に出しておきます。中まで均一に火が通りやすくなります。</p>
+                    <p class="tip">💡 冷たいまま焼くと外側が焦げて中が生になる原因に。</p>
+                </div>
+            </div>
+
+            <div class="step-row">
+                <div class="step-num-wrap">
+                    <div class="step-num">2</div>
+                    <div class="step-line"></div>
+                </div>
+                <div class="step-content">
+                    <h3>水気を拭き取り下味をつける</h3>
+                    <p>キッチンペーパーで水気をしっかり拭き取ります。塩・こしょうを全体にまぶし、好みのマリネ液（醤油・みりん・にんにく等）に<strong>30分〜一晩</strong>漬け込むと風味が増します。</p>
+                </div>
+            </div>
+
+            <div class="step-row">
+                <div class="step-num-wrap">
+                    <div class="step-num">3</div>
+                    <div class="step-line"></div>
+                </div>
+                <div class="step-content">
+                    <h3>グリルを予熱する</h3>
+                    <p>グリルを<strong>10〜15分</strong>かけて十分に予熱します。中火（175〜190°C）を目安に設定。グリルレートに油を薄く塗ると焦げ付き防止になります。</p>
+                    <p class="tip">💡 予熱が不十分だと皮がベタつき、きれいな焼き色がつきません。</p>
+                </div>
+            </div>
+
+            <div class="step-row">
+                <div class="step-num-wrap">
+                    <div class="step-num">4</div>
+                    <div class="step-line"></div>
+                </div>
+                <div class="step-content">
+                    <h3>皮面から焼く</h3>
+                    <p><strong>皮面を下にして</strong>グリルに置きます。蓋をして中火で焼きます。骨付き15〜20分・骨なし7〜10分が目安です。皮面がパリッと黄金色になったらひっくり返します。</p>
+                    <p class="tip">💡 焼いている最中に無闇に動かさない。自然に離れるまで待つのがコツ。</p>
+                </div>
+            </div>
+
+            <div class="step-row">
+                <div class="step-num-wrap">
+                    <div class="step-num">5</div>
+                    <div class="step-line"></div>
+                </div>
+                <div class="step-content">
+                    <h3>裏返して火を通す</h3>
+                    <p>肉面を下にしてさらに焼きます。骨付き15〜25分・骨なし7〜10分が目安。<strong>肉用温度計を最も厚い部分（骨に触れない場所）</strong>に刺して中心温度を確認します。</p>
+                </div>
+            </div>
+
+            <div class="step-row">
+                <div class="step-num-wrap">
+                    <div class="step-num">6</div>
+                    <div class="step-line"></div>
+                </div>
+                <div class="step-content">
+                    <h3>レスティング（休ませる）</h3>
+                    <p>グリルから取り出したら、アルミホイルをふんわりかけて<strong>5分間</strong>休ませます。肉汁が全体に行き渡りジューシーな仕上がりになります。</p>
+                    <p class="tip">💡 切るのが早すぎると肉汁が流れ出してしまいます。我慢して待つのが大切！</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Tips -->
+<section class="section section-dark" id="tips">
+    <div class="section-inner">
+        <div class="center reveal">
+            <p class="label">Pro Tips</p>
+            <h2 class="heading" style="color:#fff;">おいしく焼くコツ</h2>
+            <p class="desc">プロが実践するテクニックで、仕上がりをワンランクアップ。</p>
+        </div>
+
+        <div class="tips-grid reveal reveal-d1">
+            <div class="tip-card">
+                <span class="tip-icon">🌡️</span>
+                <h3>温度計を使う</h3>
+                <p>見た目や時間だけに頼らず、肉用温度計で中心温度を測るのが最も確実。74°C以上で安全かつジューシー。</p>
+            </div>
+            <div class="tip-card">
+                <span class="tip-icon">🔥</span>
+                <h3>直火と間接熱を使い分ける</h3>
+                <p>最初に直火で皮面を焼いてから、間接熱のゾーンに移して中までゆっくり火を通すと焦げずに仕上がります。</p>
+            </div>
+            <div class="tip-card">
+                <span class="tip-icon">🧴</span>
+                <h3>マリネで風味アップ</h3>
+                <p>醤油・みりん・にんにく・生姜の組み合わせが定番。酸（酢・レモン）を加えると肉が柔らかくなります。</p>
+            </div>
+            <div class="tip-card">
+                <span class="tip-icon">✂️</span>
+                <h3>厚みを均一にする</h3>
+                <p>骨なしの場合、厚い部分に切り込みを入れて均一な厚さにすることで、全体が同時に焼き上がります。</p>
+            </div>
+            <div class="tip-card">
+                <span class="tip-icon">💧</span>
+                <h3>水気をしっかり拭く</h3>
+                <p>焼く前に水気を拭き取ることでパリッとした皮と鮮やかな焼き色が得られます。マリネ液も軽く拭き取って。</p>
+            </div>
+            <div class="tip-card">
+                <span class="tip-icon">⏸️</span>
+                <h3>途中で触らない</h3>
+                <p>グリルに置いたらしばらく放置。肉がグリルから自然に離れたら「ひっくり返し時」のサインです。</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Safety -->
+<section class="section section-gray" id="safety">
+    <div class="section-inner">
+        <div class="reveal">
+            <p class="label">Food Safety</p>
+            <h2 class="heading">安全な焼き上がりの目安</h2>
+            <p class="desc">鶏肉の生焼けは食中毒の原因になります。以下の目安を参考に安全に調理しましょう。</p>
+        </div>
+
+        <table class="safety-table reveal reveal-d1">
+            <thead>
+                <tr>
+                    <th>中心温度</th>
+                    <th>状態</th>
+                    <th>肉汁の色</th>
+                    <th>判定</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>60°C 未満</td>
+                    <td>生・半生</td>
+                    <td>赤〜ピンク色</td>
+                    <td class="ng">❌ NG（食中毒のリスク）</td>
+                </tr>
+                <tr>
+                    <td>60〜70°C</td>
+                    <td>加熱不足</td>
+                    <td>ピンク〜薄ピンク</td>
+                    <td class="warn">⚠️ 要注意（引き続き加熱）</td>
+                </tr>
+                <tr>
+                    <td>74°C 以上</td>
+                    <td>適切に加熱済み</td>
+                    <td>透明〜薄黄色</td>
+                    <td class="ok">✅ OK（安全・ジューシー）</td>
+                </tr>
+                <tr>
+                    <td>82°C 以上</td>
+                    <td>やや加熱過多</td>
+                    <td>透明</td>
+                    <td class="warn">⚠️ パサつき始める可能性あり</td>
+                </tr>
+                <tr>
+                    <td>90°C 以上</td>
+                    <td>加熱過多</td>
+                    <td>透明</td>
+                    <td class="ng">❌ パサパサで食感が悪い</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+    <div class="section-inner center">
+        <p class="label">HomeKeeper</p>
+        <h2 class="heading">キッチン家電も、HomeKeeperで管理。</h2>
+        <p class="desc">グリルや調理家電の購入日・耐用年数・メンテナンス記録をmacOSアプリで一元管理しましょう。</p>
+        <div class="cta-btns">
+            <a href="index.html" class="btn btn-orange">HomeKeeperを見る</a>
+            <a href="https://github.com/ivytech-dev/HomeKeeper/releases" class="btn btn-outline">ダウンロード</a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <div class="footer-inner">
+        <p>© 2026 IVYTECH. All rights reserved.</p>
+        <a href="index.html">← HomeKeeperトップへ</a>
+    </div>
+</footer>
+
+<script>
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                e.target.classList.add('visible');
+                observer.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
